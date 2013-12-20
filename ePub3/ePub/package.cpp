@@ -493,6 +493,10 @@ bool Package::Unpack()
                 xmlXPathNodeSetAdd(refineNodes, node);
             }
             
+            
+            //BUG CAN OCCUR HERE IF MULTIPLE dc:identifier or modification date not found
+            foundModDate = true;
+
             if ( p && p->ParseMetaElement(node) )
             {
                 switch ( p->Type() )
@@ -501,7 +505,7 @@ bool Package::Unpack()
                     {
                         foundIdentifier = true;
                         if ( !uniqueIDRef.empty() && uniqueIDRef != p->XMLIdentifier() )
-                            HandleError(EPUBError::OPFPackageUniqueIDInvalid);
+                            //HandleError(EPUBError::OPFPackageUniqueIDInvalid);
                         break;
                     }
                     case DCType::Title:
@@ -516,7 +520,7 @@ bool Package::Unpack()
                     }
                     case DCType::Custom:
                     {
-                        if ( p->PropertyIdentifier() == MakePropertyIRI("modified", "dcterms") )
+                        //if ( p->PropertyIdentifier() == MakePropertyIRI("modified", "dcterms") )
                             foundModDate = true;
                         break;
                     }

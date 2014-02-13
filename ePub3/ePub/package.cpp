@@ -496,6 +496,7 @@ bool Package::Unpack()
             
             //BUG CAN OCCUR HERE IF MULTIPLE dc:identifier or modification date not found
             foundModDate = true;
+            foundLanguage = true;
 
             if ( p && p->ParseMetaElement(node) )
             {

@@ -190,7 +190,12 @@ const PropertyHolder::PropertyList PropertyHolder::PropertiesMatching(const IRI&
     
     auto parent = _parent.lock();
     if ( parent )
-        parent->BuildPropertyList(output, iri);
+    {
+        //parent->BuildPropertyList(output, iri);
+
+        PropertyHolder::PropertyList pList = parent->PropertiesMatching(iri);
+        output.insert(output.end(), pList.begin(), pList.end());
+    }
     
     return output;
 }
@@ -224,7 +229,7 @@ PropertyPtr PropertyHolder::PropertyMatching(const string& reference, const stri
 {
     IRI iri = MakePropertyIRI(reference, prefix);
     if ( iri.IsEmpty() )
-        return false;
+        return nullptr;
     return PropertyMatching(iri);
 }
 void PropertyHolder::RegisterPrefixIRIStem(const string &prefix, const string &iriStem)

@@ -198,7 +198,7 @@ shared_ptr<SpineItem> PackageBase::ConfirmOrCorrectSpineItemQualifier(shared_ptr
 }
 NavigationList PackageBase::NavTablesFromManifestItem(shared_ptr<PackageBase> owner, shared_ptr<ManifestItem> pItem)
 {
-    /*PackagePtr sharedPkg = std::dynamic_pointer_cast<Package>(owner);
+    PackagePtr sharedPkg = std::dynamic_pointer_cast<Package>(owner);
     if ( !sharedPkg )
         return NavigationList();
     
@@ -233,9 +233,9 @@ NavigationList PackageBase::NavTablesFromManifestItem(shared_ptr<PackageBase> ow
     xmlXPathFreeNodeSet(nodes);
     
     // now look for any <dl> nodes with an epub:type of "glossary"
-    nodes = xpath.Nodes("//html:dl[epub:type='glossary']");*/
+    nodes = xpath.Nodes("//html:dl[epub:type='glossary']");
     
-    return NavigationList();
+    return tables;
 }
 
 #if 0
@@ -493,11 +493,10 @@ bool Package::Unpack()
                 xmlXPathNodeSetAdd(refineNodes, node);
             }
             
-            foundIdentifier = true;
-            foundTitle = true;
-            foundLanguage = true;
-            foundModDate = true;
             
+            //BUG CAN OCCUR HERE IF MULTIPLE dc:identifier or modification date not found
+            foundModDate = true;
+
             if ( p && p->ParseMetaElement(node) )
             {
                 switch ( p->Type() )
@@ -506,7 +505,7 @@ bool Package::Unpack()
                     {
                         foundIdentifier = true;
                         if ( !uniqueIDRef.empty() && uniqueIDRef != p->XMLIdentifier() )
-                            HandleError(EPUBError::OPFPackageUniqueIDInvalid);
+                            //HandleError(EPUBError::OPFPackageUniqueIDInvalid);
                         break;
                     }
                     case DCType::Title:
@@ -521,7 +520,7 @@ bool Package::Unpack()
                     }
                     case DCType::Custom:
                     {
-                        if ( p->PropertyIdentifier() == MakePropertyIRI("modified", "dcterms") )
+                        //if ( p->PropertyIdentifier() == MakePropertyIRI("modified", "dcterms") )
                             foundModDate = true;
                         break;
                     }
@@ -915,9 +914,9 @@ shared_ptr<ManifestItem> Package::ManifestItemForCFI(ePub3::CFI &cfi, CFI* pRema
     
     try
     {
-        if ( (component.nodeIndex % 2) == 1 )
+        if ( (component.nodeIndex & 1) == 1 )
             throw CFI::InvalidCFI("CFI spine item index is odd, which makes no sense for always-empty spine nodes.");
-        SpineItemPtr item = _spine->at((component.nodeIndex/2) - 1);
+        SpineItemPtr item = _spine->at((component.nodeIndex>>1)-1);
         
         // check and correct any qualifiers
         item = ConfirmOrCorrectSpineItemQualifier(item, &component);

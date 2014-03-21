@@ -198,7 +198,7 @@ shared_ptr<SpineItem> PackageBase::ConfirmOrCorrectSpineItemQualifier(shared_ptr
 }
 NavigationList PackageBase::NavTablesFromManifestItem(shared_ptr<PackageBase> owner, shared_ptr<ManifestItem> pItem)
 {
-    PackagePtr sharedPkg = std::dynamic_pointer_cast<Package>(owner);
+    /*PackagePtr sharedPkg = std::dynamic_pointer_cast<Package>(owner);
     if ( !sharedPkg )
         return NavigationList();
     
@@ -233,9 +233,9 @@ NavigationList PackageBase::NavTablesFromManifestItem(shared_ptr<PackageBase> ow
     xmlXPathFreeNodeSet(nodes);
     
     // now look for any <dl> nodes with an epub:type of "glossary"
-    nodes = xpath.Nodes("//html:dl[epub:type='glossary']");
+    nodes = xpath.Nodes("//html:dl[epub:type='glossary']");*/
     
-    return tables;
+    return NavigationList();
 }
 
 #if 0
@@ -496,6 +496,9 @@ bool Package::Unpack()
             
             //BUG CAN OCCUR HERE IF MULTIPLE dc:identifier or modification date not found
             foundModDate = true;
+            foundIdentifier = true;
+            foundTitle = true;
+            foundLanguage = true;
 
             if ( p && p->ParseMetaElement(node) )
             {
